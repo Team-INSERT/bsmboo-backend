@@ -1,7 +1,7 @@
 require('dotenv').config();
 import BsmOauth, { BsmOauthError, BsmOauthErrorType, BsmOauthUserRole, StudentResource, TeacherResource } from "bsm-oauth";
-import {login} from "@src/Util/JWT/jwt";
-// BSM OAuth 객체 초기화
+
+
 const BSM_AUTH_CLIENT_ID = process.env.CLIENT_ID || '';
 const BSM_AUTH_CLIENT_SECRET = process.env.CLIENT_SECRE || '';
 const bsmOauth: BsmOauth = new BsmOauth(BSM_AUTH_CLIENT_ID, BSM_AUTH_CLIENT_SECRET);
