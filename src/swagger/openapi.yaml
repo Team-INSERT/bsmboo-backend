@@ -1,0 +1,10 @@
+openapi: '3.0.0'
+info:
+  version: 1.0.0
+  title: BSMBOO
+  description: T자형인재팀의 BSMBOO API 문서입니다.
+  license:
+    name: MIT
+servers:
+  - url: http://localhost:3000/
+paths:
