@@ -6,7 +6,8 @@ import {User} from "@database/entity/User";
 export class Post {
 
     @PrimaryGeneratedColumn()
-    boardCode!:number
+    postCode!:number
+
 
     @Column({
         type: "enum",
@@ -18,16 +19,13 @@ export class Post {
     @Column("boolean")
     isAnonymous!:boolean
 
-    @Column("boolean")
-    isAllowed!:boolean
-
     @Column("text")
     contents!:string
 
     @Column("varchar")
     Image!:string
 
-    @ManyToOne(()=> User,(user)=>user.posts)
+    @ManyToOne(()=> User,(user)=>user.posts,{ eager: true })
     user!:User
 
 }

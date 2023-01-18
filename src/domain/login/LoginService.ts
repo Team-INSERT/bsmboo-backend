@@ -1,34 +1,53 @@
+import * as console from "console";
+
 require('dotenv').config();
 import BsmOauth, { BsmOauthError, BsmOauthErrorType, BsmOauthUserRole, StudentResource, TeacherResource } from "bsm-oauth";
+import jwt from "jsonwebtoken";
+import {User} from "@database/entity/User";
+import {UserRepository} from "@database/repository/Repository";
 
 
 const BSM_AUTH_CLIENT_ID = process.env.CLIENT_ID || '';
-const BSM_AUTH_CLIENT_SECRET = process.env.CLIENT_SECRE || '';
+const BSM_AUTH_CLIENT_SECRET = process.env.CLIENT_SECRET || '';
+const screctKey = process.env.SCRECT_KEY!
 const bsmOauth: BsmOauth = new BsmOauth(BSM_AUTH_CLIENT_ID, BSM_AUTH_CLIENT_SECRET);
-
-const Oauth = async (authCode:string) => {
+const Login = async (authCode:string) => {
     try {
-        // 인증코드로 토큰 발급\
         const token: string = await bsmOauth.getToken(authCode);
+        const resource: StudentResource | TeacherResource = await bsmOauth.getResource(token);
+        const code = resource.userCode;
+        if ("student" in resource) {
+            const {name, grade, classNo} = resource.student;
+            const user = new User()
+            user.code = code;
+            user.name = name;
+            user.grade = grade;
+            user.class = classNo;
+            await UserRepository.upsert(user, {conflictPaths: ['code']});
+        }else {
+           return null;
+        }
 
-        // 토큰으로 유저 정보 가져오기
-        const resource: (StudentResource | TeacherResource) = await bsmOauth.getResource(token);
-        // 가져온 유저 정보 확인
-        console.log(resource.userCode);
+        return jwt.sign({
+            code
+        },screctKey,{
+            expiresIn: '1h'
+        })
 
     } catch (error) {
+        console.log(error);
         if (error instanceof BsmOauthError) {
             switch (error.type) {
                 case BsmOauthErrorType.INVALID_CLIENT: {
-                    // 클라이언트 정보가 잘못되었을 때
+                    return null
                     break;
                 }
                 case BsmOauthErrorType.AUTH_CODE_NOT_FOUND: {
-                    // 인증코드를 찾을 수 없을 때
+                    return null
                     break;
                 }
                 case BsmOauthErrorType.TOKEN_NOT_FOUND: {
-                    // 토큰을 찾을 수 없을 때
+                    return null
                     break;
                 }
             }
@@ -37,5 +56,5 @@ const Oauth = async (authCode:string) => {
 }
 
 export {
-    Oauth
+    Login
 }

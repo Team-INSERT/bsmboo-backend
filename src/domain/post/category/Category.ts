@@ -1,9 +1,9 @@
 enum Category {
-    FREE ,
-    worries,
-    questions,
-    complaints,
-    suggestions
+    FREE = "free" ,
+    WORRIES = "worries" ,
+    QUESTIONS = "questions" ,
+    COMPLAINTS = "complaints" ,
+    SUGGESTIONS = "suggestions" ,
 }
 
 export {

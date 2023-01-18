@@ -10,7 +10,7 @@ export class User {
     @Column()
     class!:number
     @Column()
-    name!:number
+    name!:string
     @OneToMany(() => Post, (Post) => Post.user)
     posts!: Post[]
 }
