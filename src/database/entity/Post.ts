@@ -1,4 +1,4 @@
-import {Entity, Column, PrimaryColumn, PrimaryGeneratedColumn, ManyToOne} from "typeorm"
+import {Entity, Column, PrimaryGeneratedColumn, ManyToOne} from "typeorm"
 import {Category} from "@domain/post/category/Category";
 import {User} from "@database/entity/User";
 
@@ -7,7 +7,6 @@ export class Post {
 
     @PrimaryGeneratedColumn()
     postCode!:number
-
 
     @Column({
         type: "enum",
@@ -22,8 +21,11 @@ export class Post {
     @Column("text")
     contents!:string
 
-    @Column("varchar")
-    Image!:string
+    @Column("varchar",{
+        nullable: true,
+        default: null
+    })
+    Image?:string
 
     @ManyToOne(()=> User,(user)=>user.posts,{ eager: true })
     user!:User

@@ -20,7 +20,12 @@ const AppDataSource = new DataSource({
 const DatabaseStart = () => {
     AppDataSource.initialize()
         .then(() => {
-            // here you can start to work with your database
+            const user = new User()
+            user.code = -1;
+            user.name = "anonymous";
+            user.grade = 0;
+            user.class = 0;
+            AppDataSource.manager.save(user)
         })
         .catch((error) => console.log(error))
 }
