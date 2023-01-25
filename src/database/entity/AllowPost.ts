@@ -10,7 +10,10 @@ export class AllowPost {
     @PrimaryGeneratedColumn()
     AllowedCode!:number
 
-    @OneToOne(() => Post,{ eager: true })
+    @OneToOne(() => Post,{
+        eager: true ,
+        onDelete:'CASCADE'
+    })
     @JoinColumn()
     post!:Post
 

@@ -53,9 +53,11 @@ const CreateNewPost = async (req:Request,res:Response,next:NextFunction)  => {
         post.category = category;
         post.isAnonymous = isAnonymous;
         post.contents = contents;
-        if(image) post.Image = await ImageUpload(image, imageType,post.postCode)
+
         if(isAnonymous) post.user = anonymous!;
         else post.user = User!
+        await PostRepository.save(post);
+        if(image) post.Image = await ImageUpload(image, imageType,post.postCode)
         await PostRepository.save(post);
         const DTO = new GlobalResponseDTO(200, "성공", post);
         GlobalResponseService(res, DTO);
@@ -78,7 +80,6 @@ const approvePost = async(req:Request,res:Response,next:NextFunction) => {
         if(!post) return next(new BadRequestException())
         post.isAllow = true;
         await PostRepository.save(post);
-
         const allowPost = new AllowPost();
         allowPost.post = post;
         await AllowPostRepository.save(allowPost)

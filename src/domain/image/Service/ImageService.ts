@@ -3,14 +3,16 @@ import fs from "fs";
 import {BadRequestException, InternalServerException, NotFoundException} from "@global/exception/exceptions";
 import process from "process";
 import {NextFunction, Request, Response} from "express";
+import * as console from "console";
 require('dotenv').config();
 
-const ImageUpload = async (Image:string,ImageType:string,boardCode:number) => {
+const ImageUpload = async (Image:string,ImageType:string,PostCode:number) => {
     let fileName;
+    console.log(PostCode)
     let regex =new RegExp(`^data:image\\/${ImageType};base64,`)
 
     if (Image != Image.replace(regex, "")) {
-        fileName =path.join(process.env.IMAGE_PATH!, `${boardCode}.${ImageType}`);
+        fileName =path.join(process.env.IMAGE_PATH!, `${PostCode}.${ImageType}`);
         Image = Image.replace(regex, "");
     }
     else{
@@ -18,7 +20,7 @@ const ImageUpload = async (Image:string,ImageType:string,boardCode:number) => {
     }
     fs.writeFileSync(fileName, Image, "base64");
 
-    return "http://localhost:8081/image/"+boardCode;
+    return "http://61.83.62.219:8081/api/image/"+PostCode;
 }
 
 const FindImage = async (req:Request,res:Response,next:NextFunction)  => {

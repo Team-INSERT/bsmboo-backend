@@ -11,9 +11,9 @@ router.get('/:postCode',(req:Request,res:Response,next:NextFunction) => {
     const postCode:string = req.params.postCode;
     const File = fs.readdirSync(path.join("C:\\Users\\jason\\Image"))
         .filter((file:string) => file.includes(postCode))[0]
-    return res.status(200).sendFile(path.join("C:\\Users\\jason\\Image",File))
+    if(File) return res.status(200).sendFile(path.join("C:\\Users\\jason\\Image",File))
 
-    next(new NotFoundException())
+    else next(new NotFoundException())
 })
 
 export default router;
