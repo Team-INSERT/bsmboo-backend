@@ -1,3 +1,4 @@
+import * as console from "console";
 require('dotenv').config();
 import {NextFunction, Request, Response} from "express";
 import {User} from "@database/entity/User";
@@ -13,11 +14,13 @@ import {
     UnAuthorizedException
 } from "@global/exception/exceptions";
 import BsmOauth, { BsmOauthError, BsmOauthErrorType, StudentResource, TeacherResource } from "bsm-oauth";
-
+import authController from "@domain/auth/AuthController";
 const BSM_AUTH_CLIENT_ID = process.env.CLIENT_ID || '';
 const BSM_AUTH_CLIENT_SECRET = process.env.CLIENT_SECRET || '';
 const screctKey = process.env.SCRECT_KEY!
 const bsmOauth: BsmOauth = new BsmOauth(BSM_AUTH_CLIENT_ID, BSM_AUTH_CLIENT_SECRET);
+
+
 const Login = async (req:Request,res:Response,next:NextFunction) => {
     try {
         const authCode = req.query.code!
@@ -33,12 +36,12 @@ const Login = async (req:Request,res:Response,next:NextFunction) => {
             user.grade = grade;
             user.class = classNo;
             await UserRepository.upsert(user, {conflictPaths: ['code']});
-        }else throw new ForbiddenException();
+        }else next(new ForbiddenException());
         const jwtToken= jwt.sign({code},screctKey,{expiresIn: '1h'})
         const ResponseDTO = new GlobalResponseDTO(200,"Login Success",jwtToken);
         GlobalResponseService(res,ResponseDTO);
     } catch (error) {
-
+        console.log(error)
         if (error instanceof BsmOauthError) {
             switch (error.type) {
                 case BsmOauthErrorType.INVALID_CLIENT: {
@@ -62,8 +65,8 @@ const Login = async (req:Request,res:Response,next:NextFunction) => {
 }
 const Whoami = async (req:Request,res:Response,next:NextFunction) => {
     try {
-        const user = isLogin(req.headers.authorization!);
-        if (!user) throw new UnAuthorizedException();
+        const user = await isLogin(req.headers.authorization!);
+        if (!user) return next(new UnAuthorizedException());
         GlobalResponseService(res,new GlobalResponseDTO(200,"Success",user));
     }catch (error) {
        next(error)

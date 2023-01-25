@@ -9,12 +9,21 @@ import controller from "./domain/controller";
 import { DatabaseStart } from "@database/Database";
 import {GlobalResponseService} from "@src/global/response/GlobalResponseService";
 import {GlobalResponseDTO} from "@src/global/response/DTO/GlobalResponseDTO";
+const cors = require('cors');
 
 
 DatabaseStart()
 
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(
+    cors({
+            origin: true, // '*' 안됨 -> 정확한 주소 또는 origin: true로 해도 됨
+            credentials: true,
+    }),
+);
+
 
 app.use('/api',controller);
 

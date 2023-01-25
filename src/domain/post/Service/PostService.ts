@@ -6,8 +6,14 @@ import { AllowPost } from "@database/entity/AllowPost";
 import {isLogin} from "@domain/auth/middleware/authMiddleware";
 import {GlobalResponseDTO} from "@global/response/DTO/GlobalResponseDTO";
 import {GlobalResponseService} from "@global/response/GlobalResponseService";
-import {ForbiddenException, InternalServerException, UnAuthorizedException} from "@global/exception/exceptions";
+import {
+    BadRequestException,
+    ForbiddenException,
+    InternalServerException,
+    UnAuthorizedException
+} from "@global/exception/exceptions";
 import {ImageUpload} from "@domain/image/Service/ImageService";
+import * as console from "console";
 
 const FindAllowedPost = async (req:Request,res:Response,next:NextFunction) => {
     try {
@@ -15,7 +21,6 @@ const FindAllowedPost = async (req:Request,res:Response,next:NextFunction) => {
         const Dto = new GlobalResponseDTO(200, "성공", AllPost);
         GlobalResponseService(res, Dto);
     }catch (e) {
-        console.log(e);
         return next(new InternalServerException())
     }
 };
@@ -26,7 +31,7 @@ const FindAllPost = async (req:Request,res:Response,next:NextFunction) => {
         })
         if(!User) return next(new UnAuthorizedException())
         if(User!.role !== "ADMIN") return next(new ForbiddenException())
-        const AllPost = PostRepository.find();
+        const AllPost = await PostRepository.find();;
         const Dto = new GlobalResponseDTO(200, "성공", AllPost);
         GlobalResponseService(res, Dto);
     }catch (e) {
@@ -42,8 +47,6 @@ const CreateNewPost = async (req:Request,res:Response,next:NextFunction)  => {
         const { category, isAnonymous,contents, image, imageType} = req.body;
         const User = await isLogin(req.headers.authorization!).catch(e => {
             return next(new UnAuthorizedException())
-        }).catch(e => {
-            return next(new UnAuthorizedException())
         })
         if(!User) return next(new UnAuthorizedException())
         const post = new Post();
@@ -51,7 +54,8 @@ const CreateNewPost = async (req:Request,res:Response,next:NextFunction)  => {
         post.isAnonymous = isAnonymous;
         post.contents = contents;
         if(image) post.Image = await ImageUpload(image, imageType,post.postCode)
-        post.user = isAnonymous ? User! : anonymous!;
+        if(isAnonymous) post.user = anonymous!;
+        else post.user = User!
         await PostRepository.save(post);
         const DTO = new GlobalResponseDTO(200, "성공", post);
         GlobalResponseService(res, DTO);
@@ -69,14 +73,20 @@ const approvePost = async(req:Request,res:Response,next:NextFunction) => {
         })
         if(!User) return next(new UnAuthorizedException())
         if(User!.role !== "ADMIN") return next(new ForbiddenException())
+
+        const post = await PostRepository.findOneBy({postCode: postCode});
+        if(!post) return next(new BadRequestException())
+        post.isAllow = true;
+        await PostRepository.save(post);
+
         const allowPost = new AllowPost();
-        allowPost.post = <Post>await PostRepository.findOneBy(postCode)
+        allowPost.post = post;
         await AllowPostRepository.save(allowPost)
+
         const DTO = new GlobalResponseDTO(200, "성공", allowPost);
         GlobalResponseService(res, DTO);
     }catch (e) {
-        console.log(e);
-        return next(e)
+        return next(new InternalServerException())
     }
 }
 const deletePost = async (req:Request,res:Response,next:NextFunction) => {

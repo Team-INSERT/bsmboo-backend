@@ -1,4 +1,4 @@
-import {Entity, Column, PrimaryGeneratedColumn, ManyToOne} from "typeorm"
+import {Entity, Column, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn, UpdateDateColumn} from "typeorm"
 import {Category} from "@domain/post/category/Category";
 import {User} from "@database/entity/User";
 
@@ -18,6 +18,11 @@ export class Post {
     @Column("boolean")
     isAnonymous!:boolean
 
+    @Column("boolean",{
+        default: false
+    })
+    isAllow!:boolean
+
     @Column("text")
     contents!:string
 
@@ -27,7 +32,14 @@ export class Post {
     })
     Image?:string
 
-    @ManyToOne(()=> User,(user)=>user.posts,{ eager: true })
+    @CreateDateColumn()
+    createdAt!: Date
+
+    @UpdateDateColumn()
+    updatedAt!: Date
+
+
+    @ManyToOne( ()=> User,(user)=>user.posts,{ eager: true })
     user!:User
 
 }
