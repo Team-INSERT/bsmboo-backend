@@ -14,6 +14,7 @@ import {
 } from "@global/exception/exceptions";
 import {ImageUpload} from "@domain/image/Service/ImageService";
 import * as console from "console";
+import postInstagram from './Sns/InsUpload'
 
 const FindAllowedPost = async (req:Request,res:Response,next:NextFunction) => {
     try {
@@ -85,6 +86,7 @@ const approvePost = async(req:Request,res:Response,next:NextFunction) => {
         await AllowPostRepository.save(allowPost)
 
         const DTO = new GlobalResponseDTO(200, "성공", allowPost);
+        postInstagram(User, post)
         GlobalResponseService(res, DTO);
     }catch (e) {
         return next(new InternalServerException())
