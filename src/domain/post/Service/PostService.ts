@@ -14,7 +14,7 @@ import {
 } from "@global/exception/exceptions";
 import {ImageUpload} from "@domain/image/Service/ImageService";
 import * as console from "console";
-import postInstagram from './Sns/InsUpload'
+import postInstagram from '@domain/sns/InsUpload'
 
 const FindAllowedPost = async (req:Request,res:Response,next:NextFunction) => {
     try {
@@ -24,7 +24,7 @@ const FindAllowedPost = async (req:Request,res:Response,next:NextFunction) => {
     }catch (e) {
         return next(new InternalServerException())
     }
-};
+}
 const FindAllPost = async (req:Request,res:Response,next:NextFunction) => {
     try {
         const User = await isLogin(req.headers.authorization!).catch(e => {
@@ -81,12 +81,17 @@ const approvePost = async(req:Request,res:Response,next:NextFunction) => {
         if(!post) return next(new BadRequestException())
         post.isAllow = true;
         await PostRepository.save(post);
+
         const allowPost = new AllowPost();
         allowPost.post = post;
         await AllowPostRepository.save(allowPost)
 
+        const instaResult = await postInstagram(allowPost.AllowedCode, post.contents,post.user.name,post.Image)
+        if (!instaResult) {
+            next(new InternalServerException())
+        }
+
         const DTO = new GlobalResponseDTO(200, "성공", allowPost);
-        postInstagram(User, post)
         GlobalResponseService(res, DTO);
     }catch (e) {
         return next(new InternalServerException())
