@@ -4,7 +4,6 @@ const cookieParser = require('cookie-parser');
 const app = express();
 import {HttpError, NotFoundException} from "@global/exception/Exceptions";
 import type { ErrorRequestHandler, NextFunction, Request, Response } from "express";
-import "reflect-metadata"
 import controller from "@domain/Controller";
 import { DatabaseStart } from "@database/Database";
 import {GlobalResponseService} from "@src/global/response/GlobalResponseService";
