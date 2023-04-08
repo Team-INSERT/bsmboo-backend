@@ -2,13 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const app = express();
-import {HttpError, NotFoundException} from "@src/global/exception/exceptions";
+import {HttpError, NotFoundException} from "@global/exception/Exceptions";
 import type { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 import "reflect-metadata"
-import controller from "./domain/controller";
+import controller from "@domain/Controller";
 import { DatabaseStart } from "@database/Database";
 import {GlobalResponseService} from "@src/global/response/GlobalResponseService";
-import {GlobalResponseDTO} from "@src/global/response/DTO/GlobalResponseDTO";
+import {GlobalResponseDTO} from "@global/response/dto/GlobalResponseDTO";
 const cors = require('cors');
 
 

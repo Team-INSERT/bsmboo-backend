@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "fs";
-import {BadRequestException, InternalServerException, NotFoundException} from "@global/exception/exceptions";
+import {BadRequestException, InternalServerException, NotFoundException} from "@global/exception/Exceptions";
 import process from "process";
 import {NextFunction, Request, Response} from "express";
 import * as console from "console";

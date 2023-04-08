@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import fs from "fs";
 import path from "path";
-import {NotFoundException} from "@global/exception/exceptions";
+import {NotFoundException} from "@global/exception/Exceptions";
 import * as console from "console";
 require('dotenv').config()
 const express = require('express');

@@ -3,16 +3,16 @@ import {AllowPostRepository} from "@database/repository/Repository";
 import {NextFunction, Request, Response} from "express";
 import {Post} from "@database/entity/Post";
 import { AllowPost } from "@database/entity/AllowPost";
-import {isLogin} from "@domain/auth/middleware/authMiddleware";
-import {GlobalResponseDTO} from "@global/response/DTO/GlobalResponseDTO";
+import {isLogin} from "@domain/auth/middleware/AuthMiddleware";
+import {GlobalResponseDTO} from "@global/response/dto/GlobalResponseDTO";
 import {GlobalResponseService} from "@global/response/GlobalResponseService";
 import {
     BadRequestException,
     ForbiddenException,
     InternalServerException,
     UnAuthorizedException
-} from "@global/exception/exceptions";
-import {ImageUpload} from "@domain/image/Service/ImageService";
+} from "@global/exception/Exceptions";
+import {ImageUpload} from "@domain/image/service/ImageService";
 import * as console from "console";
 import postInstagram from '@domain/sns/InsUpload'
 
@@ -78,7 +78,7 @@ const approvePost = async(req:Request,res:Response,next:NextFunction) => {
         if(User!.role !== "ADMIN") return next(new ForbiddenException())
 
         const post = await PostRepository.findOneBy({postCode: postCode});
-        if(!post) return next(new BadRequestException())
+        if(!post || post.isAllow) return next(new BadRequestException())
         post.isAllow = true;
         await PostRepository.save(post);
 

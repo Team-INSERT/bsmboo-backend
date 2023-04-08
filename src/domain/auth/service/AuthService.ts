@@ -3,16 +3,16 @@ require('dotenv').config();
 import {NextFunction, Request, Response} from "express";
 import {User} from "@database/entity/User";
 import {UserRepository} from "@database/repository/Repository";
-import {GlobalResponseDTO} from "@global/response/DTO/GlobalResponseDTO";
+import {GlobalResponseDTO} from "@global/response/dto/GlobalResponseDTO";
 import {GlobalResponseService} from "@global/response/GlobalResponseService";
 import jwt from "jsonwebtoken";
-import {isLogin} from "@domain/auth/middleware/authMiddleware";
+import {isLogin} from "@domain/auth/middleware/AuthMiddleware";
 import {
     BadRequestException,
     ForbiddenException,
     InternalServerException,
     UnAuthorizedException
-} from "@global/exception/exceptions";
+} from "@global/exception/Exceptions";
 import BsmOauth, { BsmOauthError, BsmOauthErrorType, StudentResource, TeacherResource } from "bsm-oauth";
 import authController from "@domain/auth/AuthController";
 const BSM_AUTH_CLIENT_ID = process.env.CLIENT_ID || '';

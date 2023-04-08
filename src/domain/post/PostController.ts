@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-import {approvePost, CreateNewPost, deletePost, FindAllowedPost, FindAllPost} from "@domain/post/Service/PostService";
+import {approvePost, CreateNewPost, deletePost, FindAllowedPost, FindAllPost} from "@domain/post/service/PostService";
 
 router.get('/',FindAllowedPost)
 router.get('/manage', FindAllPost)
