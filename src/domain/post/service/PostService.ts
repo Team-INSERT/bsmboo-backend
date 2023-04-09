@@ -69,8 +69,8 @@ const CreateNewPost = async (req:Request,res:Response,next:NextFunction)  => {
 }
 
 const approvePost = async(req:Request,res:Response,next:NextFunction) => {
+    const {postCode} = req.body;
     try {
-        const {postCode} = req.body;
         const User = await isLogin(req.headers.authorization!).catch(e => {
             return next(new UnAuthorizedException())
         })
@@ -80,11 +80,11 @@ const approvePost = async(req:Request,res:Response,next:NextFunction) => {
         const post = await PostRepository.findOneBy({postCode: postCode});
         if(!post || post.isAllow) return next(new BadRequestException())
         post.isAllow = true;
-        await PostRepository.save(post);
+        await PostRepository.save(post,{transaction:true});
 
         const allowPost = new AllowPost();
         allowPost.post = post;
-        await AllowPostRepository.save(allowPost)
+        await AllowPostRepository.save(allowPost,{transaction:true})
 
         const instaResult = await postInstagram(allowPost.AllowedCode, post.contents,post.user.name,post.Image)
         if (!instaResult) {
@@ -94,6 +94,11 @@ const approvePost = async(req:Request,res:Response,next:NextFunction) => {
         const DTO = new GlobalResponseDTO(200, "성공", allowPost);
         GlobalResponseService(res, DTO);
     }catch (e) {
+        const post = await PostRepository.findOneBy({postCode: postCode});
+        if(!post) return next(new BadRequestException())
+        if(post?.isAllow) post.isAllow = false;
+        await PostRepository.save(post);
+
         return next(new InternalServerException())
     }
 }

@@ -3,14 +3,14 @@ import console from "console";
 const axios = require('axios');
 require('dotenv').config();
 
-const mediaUrl = process.env.MEDIA_URL;
-const publishUrl = process.env.PUBLISH_URL;
-const logoImage = process.env.LOGO_IMAGE;
-const token = process.env.INS_TOKEN;
+const mediaUrl :string | undefined = process.env.MEDIA_URL;
+const publishUrl:string | undefined = process.env.PUBLISH_URL;
+const logoImage:string | undefined = process.env.LOGO_IMAGE;
+const token:string | undefined = process.env.INS_TOKEN;
 
-const postInstagram = (Postnum: number, content: string, Username:string,ImageLink?: string ) => {
+const postInstagram = (postNum: number, content: string, Username:string,ImageLink?: string ) => {
     try {
-        const caption : string = `부산소마고 대나무숲 ${Postnum}번째 제보\n${content}\n- ${Username}님 제보 -`;
+        const caption : string = `부산소마고 대나무숲 ${postNum}번째 제보\n${content}\n- ${Username}님 제보 -`;
         return ImageLink == undefined ? notImage(caption) : isImage(ImageLink,caption);
     }catch (err) {
         console.log(err)
@@ -18,12 +18,12 @@ const postInstagram = (Postnum: number, content: string, Username:string,ImageLi
     }
 }
 
-const notImage = async(caption:string) =>{
+const notImage = async(caption:string):Promise<boolean> =>{
     try {
-        const mdUrl = `${mediaUrl}?image_url=${logoImage}&caption=${encodeURI(caption)}&access_token=${token}`;
+        const mdUrl:string = `${mediaUrl}?image_url=${logoImage}&caption=${encodeURI(caption)}&access_token=${token}`;
         const CreationId = await axios.post(mdUrl)
         console.log(CreationId.data)
-        const pbUrl = `${publishUrl}?creation_id=${CreationId.data.id}&access_token=${token}`;
+        const pbUrl:string = `${publishUrl}?creation_id=${CreationId.data.id}&access_token=${token}`;
         return publish(pbUrl)
     }catch (err){
         console.log(err)
@@ -33,15 +33,15 @@ const notImage = async(caption:string) =>{
 }
 
 
-const isImage =  async (ImageLink : string,caption:string) => {
+const isImage =  async (ImageLink : string,caption:string):Promise<boolean> => {
     try {
-        const mdUrl = `${mediaUrl}?image_url=${logoImage}&is_carousel_item=true&access_token=${token}`;
-        const userImageUrl = `${mediaUrl}?image_url=${ImageLink}&is_carousel_item=true&access_token=${token}`;
-        const logoContainer = await axios.post(mdUrl).data.id
-        const userImageContainer = await axios.post(userImageUrl).data.id
-        const lastPublishContainer = `${mediaUrl}?children=${logoContainer},${userImageContainer}&media_type=CAROUSEL&caption=${encodeURI(caption)}&access_token=${token}`;
-        const CreationId = axios.post(lastPublishContainer).data.id
-        const lastPublishUrl = `${publishUrl}?creation_id=${CreationId}&access_token=${token}`;
+        const mdUrl:string = `${mediaUrl}?image_url=${logoImage}&is_carousel_item=true&access_token=${token}`;
+        const userImageUrl:string = `${mediaUrl}?image_url=${ImageLink}&is_carousel_item=true&access_token=${token}`;
+        const logoContainer:string = await axios.post(mdUrl).data.id
+        const userImageContainer:string = await axios.post(userImageUrl).data.id
+        const lastPublishContainer:string = `${mediaUrl}?children=${logoContainer},${userImageContainer}&media_type=CAROUSEL&caption=${encodeURI(caption)}&access_token=${token}`;
+        const CreationId:string = axios.post(lastPublishContainer).data.id
+        const lastPublishUrl:string = `${publishUrl}?creation_id=${CreationId}&access_token=${token}`;
         return publish(lastPublishUrl)
     }catch (err) {
         console.log(err)
@@ -50,7 +50,7 @@ const isImage =  async (ImageLink : string,caption:string) => {
 
 }
 
-function publish(pbUrl : any) {
+function publish(pbUrl : string):boolean {
     try {
         axios.post(pbUrl)
         return true;
