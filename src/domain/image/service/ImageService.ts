@@ -20,7 +20,7 @@ const ImageUpload = async (Image:string,ImageType:string,PostCode:number) => {
     }
     fs.writeFileSync(fileName, Image, "base64");
 
-    return "http://61.83.62.219:8081/api/image/"+PostCode;
+    return "http://api.bsmboo.kro.kr/api/image/"+PostCode;
 }
 
 const FindImage = async (req:Request,res:Response,next:NextFunction)  => {
@@ -41,5 +41,6 @@ const FindImage = async (req:Request,res:Response,next:NextFunction)  => {
 }
 
 export {
-    ImageUpload
+    ImageUpload,
+    FindImage
 }

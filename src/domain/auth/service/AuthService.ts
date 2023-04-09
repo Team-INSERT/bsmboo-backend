@@ -28,6 +28,7 @@ const Login = async (req:Request,res:Response,next:NextFunction) => {
         const token: string = await bsmOauth.getToken(authCode.toString());
         const resource: StudentResource | TeacherResource = await bsmOauth.getResource(token);
         const code = resource.userCode;
+        console.log(resource)
         if ("student" in resource) {
             const {name, grade, classNo} = resource.student;
             const user = new User()
