@@ -21,9 +21,9 @@ const postInstagram = (Postnum: number, content: string, Username:string,ImageLi
 const notImage = async(caption:string) =>{
     try {
         const mdUrl = `${mediaUrl}?image_url=${logoImage}&caption=${encodeURI(caption)}&access_token=${token}`;
-        const CreationId = await axios.post(mdUrl).data
-        console.log(CreationId)
-        const pbUrl = `${publishUrl}?creation_id=${CreationId.id}&access_token=${token}`;
+        const CreationId = await axios.post(mdUrl)
+        console.log(CreationId.data)
+        const pbUrl = `${publishUrl}?creation_id=${CreationId.data.id}&access_token=${token}`;
         return publish(pbUrl)
     }catch (err){
         console.log(err)
